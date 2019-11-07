@@ -50,9 +50,40 @@ def spectral2rgb(s):
     RGB = colour.XYZ_to_sRGB(XYZ / 100)
     return RGB
 
-bayer_cfa = np.array([
+bayer_cfa0 = np.array([
     ["R", "G"],
     ["G", "B"]
+])
+
+bayer_cfa1 = np.array([
+    ["B", "G"],
+    ["G", "R"]
+])
+
+bayer_cfa2 = np.array([
+    ["G", "R"],
+    ["B", "G"]
+])
+
+bayer_cfa3 = np.array([
+    ["G", "B"],
+    ["R", "G"]
+])
+
+quad_bayer_cfa = np.array([
+    ["R", "R", "G", "G"],
+    ["R", "R", "G", "G"],
+    ["G", "G", "B", "B"],
+    ["G", "G", "B", "B"]
+])
+
+xtrans_cfa = np.array([
+    ["G", "B", "R", "G", "R", "B"],
+    ["R", "G", "G", "B", "G", "G"],
+    ["B", "G", "G", "R", "G", "G"],
+    ["G", "R", "B", "G", "B", "R"],
+    ["B", "G", "G", "R", "G", "G"],
+    ["R", "G", "G", "B", "G", "G"]
 ])
 
 camdb = readCamData()
@@ -78,6 +109,9 @@ def im2cfa(im, cfa_filter):
         for y in range(0, filtershape[1]):
             cfa[x::filtershape[0], y::filtershape[1]] = cfa_filter[x, y] * im[x::filtershape[0], y::filtershape[1]]
     return cfa
+
+def cfa2grayscale(cfa):
+    return np.clip(np.dot(cfa, [0.2126, 0.7152, 0.0722]), 0, 1)
 
 def cfaAddNoise(cfa, intensity):
     return cfa + np.random.normal(0, 1, cfa.shape) * intensity

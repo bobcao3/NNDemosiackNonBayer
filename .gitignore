@@ -5,3 +5,5 @@ tools/*.png
 *.bin
 *.png
 .vscode
+__pycache__
+tools/__pycache__
