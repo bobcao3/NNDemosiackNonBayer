@@ -1,0 +1,36 @@
+=================== Camera List =======================
+Brand		Name			Type
+Canon		1D Mark III		DSLR
+Canon		20D			DSLR
+Canon		300D			DSLR
+Canon		40D			DSLR
+Canon		500D			DSLR
+Canon		50D			DSLR
+Canon		5D Mark II		DSLR
+Canon		600D			DSLR
+Canon		60D			DSLR
+Hasselblad	H2			DSLR
+Nikon		D3X			DSLR
+Nikon		D200			DSLR
+Nikon		D3			DSLR
+Nikon		D300s			DSLR
+Nikon		D40			DSLR
+Nikon		D50			DSLR
+Nikon		D5100			DSLR
+Nikon		D700			DSLR
+Nikon		D80			DSLR
+Nikon		D90			DSLR
+Nokia		N900			Mobile
+Olympus		E-PL2			Point-and-Shoot
+Pentax		K-5			DSLR
+Pentax		Q			Point-and-Shoot
+Point Grey	Grasshopper 50S5C	Industrial
+Point Grey	Grasshopper2 14S5C	Industrial
+Phase One				DSLR
+SONY		NEX-5N			Point-and-Shoot
+
+================ Measurement Equipments ================
+1. Light Source
+2. Monochrometer
+3. Integrating sphere
+4. Spectrometer PR655 (Photo Research, Inc.)
