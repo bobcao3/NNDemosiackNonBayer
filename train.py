@@ -13,26 +13,35 @@ from keras.callbacks import TensorBoard
 import math
 import cv2 as cv
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 sys.setrecursionlimit(10000)
-import time
+import datetime
+
+import tools.img2raw as im
+
+from tensorflow.python.client import device_lib
+
+print(device_lib.list_local_devices())
 
 # dataset
 sensor_size = 32
 focal_length = 60
 
 # data
-path_root = 'D:/demosaicking/Flickr500/bayer_128/'
+path_root = 'D:\\NNPhotos\\Data\\Sony NEX-5N.bayer0'
 img_rows, img_cols, img_channels = 128, 128, 3
-batch_size = 8
+batch_size = 16
 nb_epoch = 3000
-train_samples = 22000
+train_samples = 75000
 vali_samples = 3000
+
+phase_path = os.path.join(path_root, 'raw')
+groundtruth_path = os.path.join(path_root, 'ref')
 
 # model
 dropout_rate = 0.0
 model_name = 'unet'
-learning_rate = 1e-3
+learning_rate = 1e-4
 
 # loss func
 
@@ -57,26 +66,19 @@ def data_generator(str):
     elif str =='vali':
         epochs = train_samples/batch_size
 
-    phase_path = path_root + 'x/Img'
-    groundtruth_path = path_root + 'y/Img'
-
     while True:
         phase_list = []
         groundtruth_list = []
         for i in range(batch_size):
 
-            phase_tempt = cv.imread(phase_path+np.str(int(batch_size*epochs + i)) + '.png', 0)
-            phase_tempt = np.asarray(phase_tempt).astype(float)
-            phase_tempt = phase_tempt / 255
+            phase_tempt = im.readBinImg(os.path.join(phase_path, np.str(int(batch_size*epochs + i)) + '.bin')).astype(np.float16)
             phase_list.append(phase_tempt)
 
-            groundtruth_tempt = cv.imread(groundtruth_path + np.str(int(batch_size*epochs + i)) + '.png')
-            groundtruth_tempt = groundtruth_tempt.astype(float)
-            groundtruth_tempt = groundtruth_tempt/255
+            groundtruth_tempt = im.readBinImg(os.path.join(groundtruth_path, np.str(int(batch_size*epochs + i)) + '.bin')).astype(np.float16)
             groundtruth_list.append(groundtruth_tempt)
 
-        phase_list = np.asarray(phase_list).astype(float)
-        groundtruth_list = np.asarray(groundtruth_list).astype(float)
+        phase_list = np.asarray(phase_list)
+        groundtruth_list = np.asarray(groundtruth_list)
 
         epochs += 1
         if epochs >= train_samples/batch_size:
@@ -92,16 +94,14 @@ def vali_data():
     x_list =[]
     y_list = []
     for i in range(train_samples, train_samples+vali_samples):
-        x = cv.imread(path_root+'x/Img'+np.str(i)+'.png')
-        x = x / 255
+        x = im.readBinImg(os.path.join(phase_path, np.str(i) + '.bin')).astype(np.float16)
         x_list.append(x)
 
-        y = cv.imread(path_root+'y/Img'+np.str(i)+'.png')
-        y = y/255
+        y = im.readBinImg(os.path.join(groundtruth_path, np.str(i) + '.bin')).astype(np.float16)
         y_list.append(y)
 
-    x_list = np.asarray(x_list).astype(float)
-    y_list = np.asarray(y_list).astype(float)
+    x_list = np.asarray(x_list)
+    y_list = np.asarray(y_list)
 
     return x_list, y_list
 
@@ -111,7 +111,6 @@ def create_model(str):
     model = unet.unet(img_rows,img_cols,img_channels)
     print("Model created")
     losses = "logcosh"
-    # model.summary()
 
     optimizer = Adam(lr=learning_rate) # Using Adam instead of SGD to speed up training
     model.compile(loss='mean_absolute_error', optimizer=optimizer, metrics=["mse"])
@@ -127,11 +126,11 @@ def callback():
     early_stopper = EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=20)
 
     model_checkpoint = ModelCheckpoint(
-        "weight/{}-{}-{}-{}-{}.h5".format(model_name, learning_rate, train_samples, img_rows,
-                                          time.asctime(time.localtime(time.time()))),
+        os.path.join("weight", "{}-{}-{}-{}-{}.h5".format(model_name, learning_rate, train_samples, img_rows,
+                                          datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))),
         monitor="val_loss", save_best_only=True, save_weights_only=True)
 
-    tb = TensorBoard(log_dir="logs/{}-{}-{}-{}-{}.h5".format(model_name, learning_rate, train_samples, img_rows,time.asctime(time.localtime(time.time()))),
+    tb = TensorBoard(log_dir=os.path.join("logs", "{}-{}-{}-{}-{}.h5".format(model_name, learning_rate, train_samples, img_rows, datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))),
                      histogram_freq=1,  # frequency for the histogram, 0 for not calculating
                      batch_size=batch_size,  # size of data to be used to calculate hist
                      write_graph=True,  # store network structure map

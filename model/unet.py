@@ -2,7 +2,6 @@ import keras
 from keras.layers import * # onv2D,Input,Lambda,Dropout, MaxPooling2D, Conv2DTranspose
 from keras.models import *
 
-
 def unet(IMG_HEIGHT, IMG_WIDTH,IMG_CHANNELS = 3):
     # Build U-Net model
     inputs = Input((IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS))
@@ -56,16 +55,16 @@ def unet(IMG_HEIGHT, IMG_WIDTH,IMG_CHANNELS = 3):
     c9 = Dropout(0.1)(c9)
     c9 = Conv2D(16, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same')(c9)
 
-    c9 = Conv2D(1, (1, 1))(c9)
+    c9 = Conv2D(3, (1, 1))(c9)
     c9 = BatchNormalization()(c9)
     c9 = Activation('relu')(c9)
 
-    outputs = Reshape((-1, classes))(c9)
-    outputs = Activation('sigmoid')(outputs)
+    # outputs = Reshape((-1, classes))(c9)
+    outputs = Activation('sigmoid')(c9)
 
     model = Model(inputs=[inputs], outputs=[outputs])
     model.summary()
 
     return model
 
-unet(10,256,256)
+# unet(10,256,256)

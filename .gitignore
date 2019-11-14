@@ -7,3 +7,6 @@ tools/*.png
 .vscode
 __pycache__
 tools/__pycache__
+data/raw128
+weight/*
+logs

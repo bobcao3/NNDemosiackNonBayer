@@ -20,7 +20,7 @@ def writeBinImg(img, filename):
 # Camera spec db: http://www.gujinwei.org/research/camspec/db.html
 def readCamData():
     data = {}
-    with open("../data/camspec_database.txt", "r") as f:
+    with open("data/camspec_database.txt", "r") as f:
         while True:
             line = f.readline().replace('\n', '')
             if not line:
