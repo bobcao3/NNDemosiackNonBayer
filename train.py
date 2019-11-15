@@ -35,6 +35,9 @@ nb_epoch = 3000
 train_samples = 75000
 vali_samples = 3000
 
+indices = list(range(0, train_samples + vali_samples))
+np.random.shuffle(indices)
+
 phase_path = os.path.join(path_root, 'raw')
 groundtruth_path = os.path.join(path_root, 'ref')
 
@@ -71,10 +74,10 @@ def data_generator(str):
         groundtruth_list = []
         for i in range(batch_size):
 
-            phase_tempt = im.readBinImg(os.path.join(phase_path, np.str(int(batch_size*epochs + i)) + '.bin')).astype(np.float16)
+            phase_tempt = im.readBinImg(os.path.join(phase_path, np.str(indices[batch_size*epochs + i]) + '.bin'))
             phase_list.append(phase_tempt)
 
-            groundtruth_tempt = im.readBinImg(os.path.join(groundtruth_path, np.str(int(batch_size*epochs + i)) + '.bin')).astype(np.float16)
+            groundtruth_tempt = im.readBinImg(os.path.join(groundtruth_path, np.str(indices[batch_size*epochs + i]) + '.bin'))
             groundtruth_list.append(groundtruth_tempt)
 
         phase_list = np.asarray(phase_list)
@@ -94,10 +97,10 @@ def vali_data():
     x_list =[]
     y_list = []
     for i in range(train_samples, train_samples+vali_samples):
-        x = im.readBinImg(os.path.join(phase_path, np.str(i) + '.bin')).astype(np.float16)
+        x = im.readBinImg(os.path.join(phase_path, np.str(indices[i]) + '.bin'))
         x_list.append(x)
 
-        y = im.readBinImg(os.path.join(groundtruth_path, np.str(i) + '.bin')).astype(np.float16)
+        y = im.readBinImg(os.path.join(groundtruth_path, np.str(indices[i]) + '.bin'))
         y_list.append(y)
 
     x_list = np.asarray(x_list)
@@ -157,6 +160,7 @@ if __name__ == '__main__':
                                   callbacks=callback(),
                                   # class_weight=None,
                                   # max_queue_size=1,
+                                  shuffle=True,
                                   validation_data=vali_data(),
                                   # validation_data= vali_generator(),
                                   validation_steps=math.ceil(vali_samples/batch_size),
