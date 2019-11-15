@@ -27,8 +27,12 @@ print(device_lib.list_local_devices())
 sensor_size = 32
 focal_length = 60
 
+if len(sys.argv) != 2:
+    print("Usage: python3 train.py path_to_dataset")
+    sys.exit(-1)
+
 # data
-path_root = 'D:\\NNPhotos\\Data\\Sony NEX-5N.bayer0'
+path_root = sys.argv[1]
 img_rows, img_cols, img_channels = 128, 128, 3
 batch_size = 16
 nb_epoch = 3000
@@ -44,7 +48,7 @@ groundtruth_path = os.path.join(path_root, 'ref')
 # model
 dropout_rate = 0.0
 model_name = 'unet'
-learning_rate = 1e-4
+learning_rate = 2e-4
 
 # loss func
 
