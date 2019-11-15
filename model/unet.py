@@ -57,10 +57,10 @@ def unet(IMG_HEIGHT, IMG_WIDTH,IMG_CHANNELS = 3):
 
     c9 = Conv2D(3, (1, 1))(c9)
     c9 = BatchNormalization()(c9)
-    c9 = Activation('relu')(c9)
+    outputs = Activation('relu')(c9)
 
     # outputs = Reshape((-1, classes))(c9)
-    outputs = Activation('sigmoid')(c9)
+    # outputs = Activation('sigmoid')(c9)
 
     model = Model(inputs=[inputs], outputs=[outputs])
     model.summary()

@@ -34,8 +34,8 @@ if len(sys.argv) != 2:
 # data
 path_root = sys.argv[1]
 img_rows, img_cols, img_channels = 128, 128, 3
-batch_size = 16
-nb_epoch = 3000
+batch_size = 50
+nb_epoch = 1500
 train_samples = 75000
 vali_samples = 3000
 
