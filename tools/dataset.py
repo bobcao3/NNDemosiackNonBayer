@@ -28,19 +28,20 @@ def augmentAndWrite(filename, oimg, index):
     index2 = 0
     for i in range(0, 4):
         img = oimg * random.uniform(0.5, 2.0) # -1 EV to + 1 EV
+
         # Write reference data
-        ofile_bin = os.path.join(output_dir_groundtruth, filename + "." + str(index) + "." + str(index2) + ".bin")
+        ofile_bin = os.path.join(output_dir_groundtruth, filename + "." + str(index) + "." + str(i) + ".bin")
         print("Output: ", ofile_bin)
-        ofile_png = os.path.join(output_dir_groundtruth, filename + "." + str(index) + "." + str(index2) + ".jpg")
+        ofile_png = os.path.join(output_dir_groundtruth, filename + "." + str(index) + "." + str(i) + ".jpg")
         cv2.imwrite(ofile_png, cv2.cvtColor(np.clip(img * 255, 0, 255).astype(np.uint8), cv2.COLOR_RGB2BGR))
         im.writeBinImg(img, ofile_bin)
         # Write raw data
-        ofile_bin = os.path.join(output_dir_raw, filename + "." + str(index) + "." + str(index2) + ".bin")
+        ofile_bin = os.path.join(output_dir_raw, filename + "." + str(index) + "." + str(i) + ".bin")
         cfa = im.im2cfa(img, im.cfa2rgb(im.bayer_cfa0, camera))
         # cfa = im.cfaAddNoise(cfa)
         im.writeBinImg(cfa, ofile_bin)
+
         oimg = cv2.rotate(oimg, cv2.ROTATE_90_CLOCKWISE)
-        index2 += 1
 
 from multiprocessing import Pool
 

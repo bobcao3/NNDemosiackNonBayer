@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys
 from keras.preprocessing.image import ImageDataGenerator
 
-from model import seg,unet
+from model import seg,unet,DMCNN
 import numpy as np
 from keras.utils import np_utils
 from keras.optimizers import Adam
@@ -19,10 +19,6 @@ import datetime
 
 import tools.img2raw as im
 
-from tensorflow.python.client import device_lib
-
-print(device_lib.list_local_devices())
-
 # dataset
 sensor_size = 32
 focal_length = 60
@@ -34,10 +30,24 @@ if len(sys.argv) != 2:
 # data
 path_root = sys.argv[1]
 img_rows, img_cols, img_channels = 128, 128, 3
-batch_size = 50
-nb_epoch = 1500
+batch_size = 100
+nb_epoch = 750
 train_samples = 75000
 vali_samples = 3000
+
+import tensorflow as tf
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  try:
+    tf.config.experimental.set_virtual_device_configuration(
+        gpus[0],
+        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5000)])
+    logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+  except RuntimeError as e:
+    # Virtual devices must be set before GPUs have been initialized
+    print(e)
 
 indices = list(range(0, train_samples + vali_samples))
 np.random.shuffle(indices)
@@ -47,7 +57,7 @@ groundtruth_path = os.path.join(path_root, 'ref')
 
 # model
 dropout_rate = 0.0
-model_name = 'unet'
+model_name = 'dmcnn'
 learning_rate = 2e-4
 
 # loss func
@@ -113,18 +123,24 @@ def vali_data():
     return x_list, y_list
 
 
+from keras import backend as K
+
+def ssim_loss(y_true, y_pred):
+    alpha = 0.8
+    L1 = K.mean(K.abs(y_true - y_pred))
+    ms_ssim = 1.0 - tf.image.ssim_multiscale(y_true, y_pred, 2.0, filter_size=7)
+    return alpha * ms_ssim + (1.0 - alpha) * L1
+
 def create_model(str):
 
-    model = unet.unet(img_rows,img_cols,img_channels)
+    model = DMCNN.dmcnn(img_rows,img_cols,img_channels)
     print("Model created")
-    losses = "logcosh"
 
     optimizer = Adam(lr=learning_rate) # Using Adam instead of SGD to speed up training
-    model.compile(loss='mean_absolute_error', optimizer=optimizer, metrics=["mse"])
+    model.compile(loss=ssim_loss, optimizer=optimizer, metrics=["mse"])
     print("Finished compiling")
     print("Building model...")
     return model
-
 
 def callback():
 
@@ -135,7 +151,7 @@ def callback():
     model_checkpoint = ModelCheckpoint(
         os.path.join("weight", "{}-{}-{}-{}-{}.h5".format(model_name, learning_rate, train_samples, img_rows,
                                           datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))),
-        monitor="val_loss", save_best_only=True, save_weights_only=True)
+        monitor="val_loss", save_best_only=False, save_weights_only=True)
 
     tb = TensorBoard(log_dir=os.path.join("logs", "{}-{}-{}-{}-{}.h5".format(model_name, learning_rate, train_samples, img_rows, datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))),
                      histogram_freq=1,  # frequency for the histogram, 0 for not calculating
