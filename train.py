@@ -30,8 +30,8 @@ if len(sys.argv) != 2:
 # data
 path_root = sys.argv[1]
 img_rows, img_cols, img_channels = 128, 128, 3
-batch_size = 100
-nb_epoch = 750
+batch_size = 25
+nb_epoch = 3000
 train_samples = 75000
 vali_samples = 3000
 
@@ -42,7 +42,7 @@ if gpus:
   try:
     tf.config.experimental.set_virtual_device_configuration(
         gpus[0],
-        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5000)])
+        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=7000)])
     logical_gpus = tf.config.experimental.list_logical_devices('GPU')
     print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
   except RuntimeError as e:
@@ -57,8 +57,8 @@ groundtruth_path = os.path.join(path_root, 'ref')
 
 # model
 dropout_rate = 0.0
-model_name = 'dmcnn'
-learning_rate = 2e-4
+model_name = 'dmcnn-vd'
+learning_rate = 1e-4
 
 # loss func
 
@@ -133,7 +133,7 @@ def ssim_loss(y_true, y_pred):
 
 def create_model(str):
 
-    model = DMCNN.dmcnn(img_rows,img_cols,img_channels)
+    model = DMCNN.dmcnnvd(img_rows,img_cols,img_channels)
     print("Model created")
 
     optimizer = Adam(lr=learning_rate) # Using Adam instead of SGD to speed up training
