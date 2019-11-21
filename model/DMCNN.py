@@ -9,7 +9,8 @@ def dmcnn(img_rows, img_cols, img_channels = 3):
 
     x = Conv2D(128,(9,9),kernel_initializer = 'he_normal', activation='relu', padding='same')(input)
     x = Conv2D(64,(1,1),kernel_initializer = 'he_normal', activation='relu', padding='same')(x)
-    y = Conv2D(3,(5,5),kernel_initializer = 'he_normal', activation='relu', padding='same')(x)
+    y = Conv2D(3,(5,5),kernel_initializer = 'he_normal', activation=None, padding='same')(x)
+    y = Conv2D(3,(1,1),kernel_initializer = 'he_normal', activation='relu', padding='same')(y)
 
     model = Model(inputs = input, outputs = y)
 
@@ -31,6 +32,10 @@ def dmcnn_frozen(img_rows, img_cols, img_channels = 3):
     layer2 = Conv2D(3,(5,5),kernel_initializer = 'he_normal', activation='relu', padding='same')
     layer2.trainable = False
     y = layer2(x)
+
+    layer3 = Conv2D(3,(1,1),kernel_initializer = 'he_normal', activation='relu', padding='same')
+    layer3.trainable = False
+    y = layer3(y)
 
     model = Model(inputs = input, outputs = y)
 
@@ -69,37 +74,37 @@ def dmcnnvd(img_rows, img_cols, img_channels):
     l5 = BatchNormalization()(l5)
     l5 = Activation('selu')(l5)
 
-    #l6 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l5)
-    #l6 = BatchNormalization()(l6)
-    #l6 = Activation('selu')(l6)
+    l6 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l5)
+    l6 = BatchNormalization()(l6)
+    l6 = Activation('selu')(l6)
 
-    #l7 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l6)
-    #l7 = BatchNormalization()(l7)
-    #l7 = Activation('selu')(l7)
+    l7 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l6)
+    l7 = BatchNormalization()(l7)
+    l7 = Activation('selu')(l7)
 
-    #l8 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l7)
-    #l8 = BatchNormalization()(l8)
-    #l8 = Activation('selu')(l8)
+    l8 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l7)
+    l8 = BatchNormalization()(l8)
+    l8 = Activation('selu')(l8)
 
-    #l9 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l8)
-    #l9 = BatchNormalization()(l9)
-    #l9 = Activation('selu')(l9)
+    l9 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l8)
+    l9 = BatchNormalization()(l9)
+    l9 = Activation('selu')(l9)
 
-    #l10 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l9)
-    #l10 = BatchNormalization()(l10)
-    #l10 = Activation('selu')(l10)
+    l10 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l9)
+    l10 = BatchNormalization()(l10)
+    l10 = Activation('selu')(l10)
 
-    #l11 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l10)
-    #l11 = BatchNormalization()(l11)
-    #l11 = Activation('selu')(l11)
+    l11 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l10)
+    l11 = BatchNormalization()(l11)
+    l11 = Activation('selu')(l11)
 
-    #l12 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l11)
-    #l12 = BatchNormalization()(l12)
-    #l12 = Activation('selu')(l12)
+    l12 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l11)
+    l12 = BatchNormalization()(l12)
+    l12 = Activation('selu')(l12)
 
-    #l13 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l12)
-    #l13 = BatchNormalization()(l13)
-    #l13 = Activation('selu')(l13)
+    l13 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l12)
+    l13 = BatchNormalization()(l13)
+    l13 = Activation('selu')(l13)
 
     #l14 = Conv2D(64, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l13)
     #l14 = BatchNormalization()(l14)
@@ -121,7 +126,7 @@ def dmcnnvd(img_rows, img_cols, img_channels):
     #l18 = BatchNormalization()(l18)
     #l18 = Activation('selu')(l18)
 
-    l19 = Conv2D(3, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l5)
+    l19 = Conv2D(3, (3,3), kernel_initializer = VarianceScaling(scale=2.0, mode='fan_in', distribution='normal'), activation=None, padding='same')(l13)
     l19 = BatchNormalization()(l19)
     l19 = Activation('selu')(l19)
 

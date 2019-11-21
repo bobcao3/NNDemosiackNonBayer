@@ -9,12 +9,15 @@ def readImg(filename):
     image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
     return image / 255
 
-def readBinImg(filename):
+def readBinImg(filename, f16 = False):
     with open(filename, "rb") as f:
-        return pickle.load(f)
+        result = pickle.load(f)
+        if not f16:
+            result = result.astype(np.float32)
+        return result
 
 def writeBinImg(img, filename):
-    img = img.astype(np.float32)
+    img = img.astype(np.float16)
     pickle.dump(img, open(filename, "wb"))
 
 # Camera spec db: http://www.gujinwei.org/research/camspec/db.html
@@ -102,12 +105,18 @@ def cfa2rgb(cfa, camera_model):
     cfa_rgb = cfa_rgb.reshape(cfa.shape)
     return cfa_rgb
 
-def im2cfa(im, cfa_filter):
-    cfa = im.copy()
+def im2cfa(im, cfa_filter, saturate=False):
+    cfa = np.zeros(im.shape)
     filtershape = cfa_filter.shape
     for x in range(0, filtershape[0]):
         for y in range(0, filtershape[1]):
-            cfa[x::filtershape[0], y::filtershape[1]] = cfa_filter[x, y] * im[x::filtershape[0], y::filtershape[1]]
+            f_sRGB = np.square(np.maximum(cfa_filter[x, y], 0.0))
+            response = np.dot(np.square(im[x::filtershape[0], y::filtershape[1]]), f_sRGB / np.sum(f_sRGB))
+            if saturate:
+                response = np.minimum(response, 1.0)
+            cfa[x::filtershape[0], y::filtershape[1], 0] = np.sqrt(f_sRGB[0] * response)
+            cfa[x::filtershape[0], y::filtershape[1], 1] = np.sqrt(f_sRGB[1] * response)
+            cfa[x::filtershape[0], y::filtershape[1], 2] = np.sqrt(f_sRGB[2] * response)
     return cfa
 
 def cfa2grayscale(cfa):

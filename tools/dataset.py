@@ -45,12 +45,14 @@ def augmentAndWrite(filename, oimg, index):
 
 from multiprocessing import Pool
 
+downSample = 1
+
 def processFile(filename):
     if filename.endswith(".png") or filename.endswith(".jpg"):
         fullpath_orig = os.path.join(orignals_dir, filename)
         image_orig = im.readImg(fullpath_orig)
         # Downscale by 4 to reduce effects of image compression, camera noise, etc
-        size_orig = (int(image_orig.shape[1] / 4), int(image_orig.shape[0] / 4))
+        size_orig = (int(image_orig.shape[1] / downSample), int(image_orig.shape[0] / downSample))
         image_orig = cv2.resize(image_orig, size_orig, interpolation = cv2.INTER_AREA)
         # Slice images to 128x128 patches
         index = 0
@@ -69,7 +71,7 @@ if __name__ == '__main__':
     for filename in os.listdir(output_dir_groundtruth):
         if filename.endswith(".jpg"):
             os.rename(os.path.join(output_dir_groundtruth, filename), os.path.join(output_dir_groundtruth, str(index) + ".jpg"))
+            index += 1
         if filename.endswith(".bin"):
             os.rename(os.path.join(output_dir_groundtruth, filename), os.path.join(output_dir_groundtruth, str(index) + ".bin"))
             os.rename(os.path.join(output_dir_raw, filename), os.path.join(output_dir_raw, str(index) + ".bin"))
-            index += 1
