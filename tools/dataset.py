@@ -68,10 +68,8 @@ if __name__ == '__main__':
         p.map(processFile, os.listdir(orignals_dir))
     print("Renaming files")
     index = 0
-    for filename in os.listdir(output_dir_groundtruth):
-        if filename.endswith(".jpg"):
-            os.rename(os.path.join(output_dir_groundtruth, filename), os.path.join(output_dir_groundtruth, str(index) + ".jpg"))
-            index += 1
-        if filename.endswith(".bin"):
-            os.rename(os.path.join(output_dir_groundtruth, filename), os.path.join(output_dir_groundtruth, str(index) + ".bin"))
-            os.rename(os.path.join(output_dir_raw, filename), os.path.join(output_dir_raw, str(index) + ".bin"))
+    for filename in os.listdir(output_dir_raw):
+        os.rename(os.path.join(output_dir_groundtruth, filename), os.path.join(output_dir_groundtruth, str(index) + ".jpg"))
+        os.rename(os.path.join(output_dir_groundtruth, filename), os.path.join(output_dir_groundtruth, str(index) + ".bin"))
+        os.rename(os.path.join(output_dir_raw, filename), os.path.join(output_dir_raw, str(index) + ".bin"))
+        index += 1
