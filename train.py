@@ -190,6 +190,5 @@ if __name__ == '__main__':
                                   # shuffle=True
                                   )
 
-    print('test of github')
 
 
