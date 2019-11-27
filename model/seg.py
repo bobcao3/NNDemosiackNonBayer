@@ -152,4 +152,5 @@ if __name__ == '__main__':
     # plot_model(m, show_shapes=True, to_file='model_segnet.png')
     print(len(m.layers))
     print('github test')
+
     m.summary()
