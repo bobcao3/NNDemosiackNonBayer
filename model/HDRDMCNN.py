@@ -78,7 +78,28 @@ def unet(IMG_HEIGHT, IMG_WIDTH,IMG_CHANNELS = 3):
 
     return model
 
+from model import DMCNN
+
 def HDRdmcnn(img_rows, img_cols, img_channels):
+    input = Input((img_rows, img_cols, img_channels))
+
+    # dmcnn_m = dmcnn(img_rows, img_cols, img_channels)(input)
+
+    dmcnn_model = DMCNN.dmcnn_frozen(img_rows,img_cols,img_channels)
+    dmcnn_model.load_weights("weight/DMCNN-0.001-27000-128-2019-11-20-03-40-44.h5")
+    dmcnn_m = dmcnn_model(input)
+
+    unet_m = unet(img_rows, img_cols, img_channels)(input)
+
+    y = Add()([dmcnn_m, unet_m])
+    y = Conv2D(3, (1,1), activation='relu', kernel_initializer='he_normal')(y)
+
+    model = Model(inputs=[input], outputs=[y])
+    model.summary()
+
+    return model
+
+def HDRdmcnn_nonHDR(img_rows, img_cols, img_channels):
     input = Input((img_rows, img_cols, img_channels))
 
     dmcnn_m = dmcnn(img_rows, img_cols, img_channels)(input)

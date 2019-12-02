@@ -45,7 +45,7 @@ def augmentAndWrite(filename, oimg, index):
 
 from multiprocessing import Pool
 
-downSample = 1
+downSample = 6
 
 def processFile(filename):
     if filename.endswith(".png") or filename.endswith(".jpg"):

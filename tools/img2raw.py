@@ -105,7 +105,7 @@ def cfa2rgb(cfa, camera_model):
     cfa_rgb = cfa_rgb.reshape(cfa.shape)
     return cfa_rgb
 
-def im2cfa(im, cfa_filter, saturate=False):
+def im2cfa(im, cfa_filter, saturate=True):
     cfa = np.zeros(im.shape)
     filtershape = cfa_filter.shape
     for x in range(0, filtershape[0]):

@@ -34,7 +34,7 @@ if gpus:
   try:
     tf.config.experimental.set_virtual_device_configuration(
         gpus[0],
-        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=7000)])
+        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5000)])
     logical_gpus = tf.config.experimental.list_logical_devices('GPU')
     print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
   except RuntimeError as e:
@@ -51,8 +51,8 @@ vali_samples = 3000
 
 # model
 dropout_rate = 0.0
-model_name = 'HDRDMCNN'
-learning_rate = 1e-3 # DMCNN-VD: 1e-4 UNET: 2e-4, DMCNN: 1e-3
+model_name = 'HDRDMCNN-HDR-Data'
+learning_rate = 3e-4 # DMCNN-VD: 1e-4 UNET: 2e-4, DMCNN: 1e-3
 
 indices = list(range(0, train_samples + vali_samples))
 np.random.shuffle(indices)
