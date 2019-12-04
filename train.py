@@ -51,8 +51,8 @@ vali_samples = 3000
 
 # model
 dropout_rate = 0.0
-model_name = 'HDRDMCNN-HDR-Data'
-learning_rate = 3e-4 # DMCNN-VD: 1e-4 UNET: 2e-4, DMCNN: 1e-3
+model_name = 'HDRDMCNN-XTRANS'
+learning_rate = 5e-4 # DMCNN-VD: 1e-4 UNET: 2e-4, DMCNN: 1e-3
 
 indices = list(range(0, train_samples + vali_samples))
 np.random.shuffle(indices)
@@ -134,7 +134,7 @@ def ssim_loss(y_true, y_pred):
 
 def create_model(str):
 
-    model = HDRDMCNN.HDRdmcnn(img_rows,img_cols,img_channels)
+    model = HDRDMCNN.HDRdmcnn_nonHDR(img_rows,img_cols,img_channels)
     print("Model created")
 
     optimizer = Adam(lr=learning_rate) # Using Adam instead of SGD to speed up training

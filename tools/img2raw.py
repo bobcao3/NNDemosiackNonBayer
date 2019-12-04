@@ -99,13 +99,13 @@ def cfa2rgb(cfa, camera_model):
         "B": spectral2rgb(cam_resp[2])
     }
     _cfa = cfa.reshape(cfa.shape[0] * cfa.shape[1])
-    cfa_rgb = np.array([None] * cfa.shape[0] * cfa.shape[1])
+    cfa_rgb = [None] * cfa.shape[0] * cfa.shape[1]
     for i in range(0, cfa.shape[0] * cfa.shape[1]):
         cfa_rgb[i] = cam_rgb[_cfa[i]]
-    cfa_rgb = cfa_rgb.reshape(cfa.shape)
+    cfa_rgb = np.array(cfa_rgb).reshape((cfa.shape[0], cfa.shape[1], 3))
     return cfa_rgb
 
-def im2cfa(im, cfa_filter, saturate=True):
+def im2cfa(im, cfa_filter, saturate=False):
     cfa = np.zeros(im.shape)
     filtershape = cfa_filter.shape
     for x in range(0, filtershape[0]):

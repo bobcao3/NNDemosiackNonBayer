@@ -24,8 +24,12 @@ path.mkdir(parents=True, exist_ok=True)
 path = Path(output_dir_raw)
 path.mkdir(parents=True, exist_ok=True)
 
+gamma = 2.2
+
 def augmentAndWrite(filename, oimg, index):
-    index2 = 0
+    oimg = np.power(np.maximum(oimg, 0), gamma)
+    cfa = im.cfa2rgb(im.xtrans_cfa, camera)
+    cfa = np.power(np.maximum(cfa, 0), gamma)
     for i in range(0, 4):
         img = oimg * random.uniform(0.5, 2.0) # -1 EV to + 1 EV
 
@@ -37,9 +41,9 @@ def augmentAndWrite(filename, oimg, index):
         im.writeBinImg(img, ofile_bin)
         # Write raw data
         ofile_bin = os.path.join(output_dir_raw, filename + "." + str(index) + "." + str(i) + ".bin")
-        cfa = im.im2cfa(img, im.cfa2rgb(im.bayer_cfa0, camera))
-        # cfa = im.cfaAddNoise(cfa)
-        im.writeBinImg(cfa, ofile_bin)
+        raw = im.im2cfa(img, cfa)
+        # raw = im.cfaAddNoise(cfa)
+        im.writeBinImg(raw, ofile_bin)
 
         oimg = cv2.rotate(oimg, cv2.ROTATE_90_CLOCKWISE)
 
@@ -64,12 +68,12 @@ def processFile(filename):
                 index += 1
   
 if __name__ == '__main__':
-    with Pool(12) as p:
+    with Pool(6) as p:
         p.map(processFile, os.listdir(orignals_dir))
     print("Renaming files")
     index = 0
     for filename in os.listdir(output_dir_raw):
-        os.rename(os.path.join(output_dir_groundtruth, filename), os.path.join(output_dir_groundtruth, str(index) + ".jpg"))
-        os.rename(os.path.join(output_dir_groundtruth, filename), os.path.join(output_dir_groundtruth, str(index) + ".bin"))
+        os.rename(os.path.join(output_dir_groundtruth, filename[:-3] + "jpg"), os.path.join(output_dir_groundtruth, str(index) + ".jpg"))
+        os.rename(os.path.join(output_dir_groundtruth, filename[:-3] + "bin"), os.path.join(output_dir_groundtruth, str(index) + ".bin"))
         os.rename(os.path.join(output_dir_raw, filename), os.path.join(output_dir_raw, str(index) + ".bin"))
         index += 1
